@@ -151,28 +151,32 @@ public class MainActivity extends AppCompatActivity {
         String tuKhoa = searchView.getQuery().toString().toLowerCase();
         String trangThai = spinnerLocTrangThai.getSelectedItem().toString();
         String danhMuc = spinnerLocDanhMuc.getSelectedItem().toString();
+        
         danhSachCongViec = new ArrayList<>();
         for (CongViec cv : danhSachGoc) {
-            boolean khopTuKhoa = cv.getTieuDe().toLowerCase().contains(tuKhoa) || cv.getMoTa().toLowerCase().contains(tuKhoa);
-            boolean khopTrangThai = trangThai.equals("Tất cả") || cv.getTrangThai().equals(trangThai);
-            boolean khopDanhMuc = false;
-            if (danhMuc.equals("Tất cả")) {
-                khopDanhMuc = true;
-            } else if (danhMuc.equals("Cá nhân")) {
-                khopDanhMuc = (cv.getDanhMuc() != null && cv.getDanhMuc().equals("Cá nhân"));
-            } else {
-                if (cv.getMaDuAn() > 0) {
-                    DuAn duAn = dbHelper.layDuAnTheoMa(cv.getMaDuAn());
-                    if (duAn != null && duAn.getTenDuAn().equals(danhMuc)) {
-                        khopDanhMuc = true;
-                    }
-                }
-            }
-            if (khopTuKhoa && khopTrangThai && khopDanhMuc) {
+            if (khopDieuKien(cv, tuKhoa, trangThai, danhMuc)) {
                 danhSachCongViec.add(cv);
             }
         }
         capNhatAdapter();
+    }
+
+    private boolean khopDieuKien(CongViec cv, String tuKhoa, String trangThai, String danhMuc) {
+        boolean khopTuKhoa = cv.getTieuDe().toLowerCase().contains(tuKhoa) || 
+                             cv.getMoTa().toLowerCase().contains(tuKhoa);
+        boolean khopTrangThai = trangThai.equals("Tất cả") || cv.getTrangThai().equals(trangThai);
+        boolean khopDanhMuc = kiemTraDanhMuc(cv, danhMuc);
+        return khopTuKhoa && khopTrangThai && khopDanhMuc;
+    }
+
+    private boolean kiemTraDanhMuc(CongViec cv, String danhMuc) {
+        if (danhMuc.equals("Tất cả")) return true;
+        if (danhMuc.equals("Cá nhân")) return cv.getDanhMuc() != null && cv.getDanhMuc().equals("Cá nhân");
+        if (cv.getMaDuAn() > 0) {
+            DuAn duAn = dbHelper.layDuAnTheoMa(cv.getMaDuAn());
+            return duAn != null && duAn.getTenDuAn().equals(danhMuc);
+        }
+        return false;
     }
 
     private void capNhatAdapter() {
@@ -193,41 +197,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sapXepDanhSachCongViec(List<CongViec> danhSach) {
-        java.util.Collections.sort(danhSach, new java.util.Comparator<CongViec>() {
-            @Override
-            public int compare(CongViec cv1, CongViec cv2) {
-                boolean cv1HoanThanh = cv1.getTrangThai().equals("Hoàn thành");
-                boolean cv2HoanThanh = cv2.getTrangThai().equals("Hoàn thành");
-                if (cv1HoanThanh && !cv2HoanThanh) {
-                    return 1;
-                }
-                if (!cv1HoanThanh && cv2HoanThanh) {
-                    return -1;
-                }
-                int uuTien1 = getGiaTriUuTien(cv1.getMucDoUuTien());
-                int uuTien2 = getGiaTriUuTien(cv2.getMucDoUuTien());
-                if (uuTien1 != uuTien2) {
-                    return uuTien1 - uuTien2;
-                }
-                int trangThai1 = getGiaTriTrangThai(cv1.getTrangThai());
-                int trangThai2 = getGiaTriTrangThai(cv2.getTrangThai());
-                return trangThai1 - trangThai2;
-            }
+        java.util.Collections.sort(danhSach, (cv1, cv2) -> {
+            boolean cv1Done = cv1.getTrangThai().equals("Hoàn thành");
+            boolean cv2Done = cv2.getTrangThai().equals("Hoàn thành");
+            if (cv1Done != cv2Done) return cv1Done ? 1 : -1;
+            
+            int uuTien = getGiaTriUuTien(cv1.getMucDoUuTien()) - getGiaTriUuTien(cv2.getMucDoUuTien());
+            return uuTien != 0 ? uuTien : getGiaTriTrangThai(cv1.getTrangThai()) - getGiaTriTrangThai(cv2.getTrangThai());
         });
     }
 
-    private int getGiaTriUuTien(String mucDoUuTien) {
-        if (mucDoUuTien.equals("Cao")) return 1;
-        if (mucDoUuTien.equals("Trung bình")) return 2;
-        if (mucDoUuTien.equals("Thấp")) return 3;
-        return 4;
+    private int getGiaTriUuTien(String uuTien) {
+        switch (uuTien) {
+            case "Cao": return 1;
+            case "Trung bình": return 2;
+            case "Thấp": return 3;
+            default: return 4;
+        }
     }
 
     private int getGiaTriTrangThai(String trangThai) {
-        if (trangThai.equals("Chưa hoàn thành")) return 1;
-        if (trangThai.equals("Đang thực hiện")) return 2;
-        if (trangThai.equals("Hoàn thành")) return 3;
-        return 4;
+        switch (trangThai) {
+            case "Chưa hoàn thành": return 1;
+            case "Đang thực hiện": return 2;
+            case "Hoàn thành": return 3;
+            default: return 4;
+        }
     }
 
     private void xacNhanXoa(final CongViec congViec) {

@@ -97,72 +97,46 @@ public class ThemCongViecActivity extends AppCompatActivity {
 
     private void luuCongViec() {
         String tieuDe = edtTieuDe.getText().toString().trim();
-        String moTa = edtMoTa.getText().toString().trim();
-        String ngayBatDau = edtNgayBatDau.getText().toString().trim();
-        String ngayKetThuc = edtNgayKetThuc.getText().toString().trim();
-        String danhMuc = spinnerDanhMuc.getSelectedItem().toString();
-        String trangThai = spinnerTrangThai.getSelectedItem().toString();
-        String mucDoUuTien = spinnerMucDoUuTien.getSelectedItem().toString();
         if (tieuDe.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập tiêu đề", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (congViecSua == null) {
-            CongViec congViec = new CongViec();
-            congViec.setMaNguoiDung(maNguoiDung);
-            congViec.setDanhMuc(danhMuc);
-            congViec.setTieuDe(tieuDe);
-            congViec.setMoTa(moTa);
-            congViec.setNgayBatDau(ngayBatDau);
-            congViec.setNgayKetThuc(ngayKetThuc);
-            congViec.setTrangThai(trangThai);
-            congViec.setMucDoUuTien(mucDoUuTien);
-            long result = dbHelper.themCongViecCaNhan(congViec);
-            if (result > 0) {
-                Toast.makeText(this, "Thêm công việc thành công", Toast.LENGTH_SHORT).show();
-                finish();
-            } else {
-                Toast.makeText(this, "Thêm công việc thất bại", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            congViecSua.setDanhMuc(danhMuc);
-            congViecSua.setTieuDe(tieuDe);
-            congViecSua.setMoTa(moTa);
-            congViecSua.setNgayBatDau(ngayBatDau);
-            congViecSua.setNgayKetThuc(ngayKetThuc);
-            congViecSua.setTrangThai(trangThai);
-            congViecSua.setMucDoUuTien(mucDoUuTien);
-            int result = dbHelper.capNhatCongViec(congViecSua);
-            if (result > 0) {
-                Toast.makeText(this, "Cập nhật công việc thành công", Toast.LENGTH_SHORT).show();
-                finish();
-            } else {
-                Toast.makeText(this, "Cập nhật công việc thất bại", Toast.LENGTH_SHORT).show();
-            }
-        }
+
+        CongViec cv = congViecSua != null ? congViecSua : new CongViec();
+        cv.setMaNguoiDung(maNguoiDung);
+        cv.setDanhMuc(spinnerDanhMuc.getSelectedItem().toString());
+        cv.setTieuDe(tieuDe);
+        cv.setMoTa(edtMoTa.getText().toString().trim());
+        cv.setNgayBatDau(edtNgayBatDau.getText().toString().trim());
+        cv.setNgayKetThuc(edtNgayKetThuc.getText().toString().trim());
+        cv.setTrangThai(spinnerTrangThai.getSelectedItem().toString());
+        cv.setMucDoUuTien(spinnerMucDoUuTien.getSelectedItem().toString());
+
+        long result = congViecSua == null ? dbHelper.themCongViecCaNhan(cv) : dbHelper.capNhatCongViec(cv);
+        String action = congViecSua == null ? "Thêm" : "Cập nhật";
+        String message = result > 0 ? action + " công việc thành công" : action + " công việc thất bại";
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        if (result > 0) finish();
     }
 
     private int getIndexDanhMuc(String danhMuc) {
         String[] array = {"Cá nhân", "Học tập", "Công việc"};
-        for (int i = 0; i < array.length; i++) {
+        for (int i = 0; i < array.length; i++) 
             if (array[i].equals(danhMuc)) return i;
-        }
         return 0;
     }
 
     private int getIndexTrangThai(String trangThai) {
         String[] array = getResources().getStringArray(R.array.trang_thai_array);
-        for (int i = 0; i < array.length; i++) {
+        for (int i = 0; i < array.length; i++) 
             if (array[i].equals(trangThai)) return i;
-        }
         return 0;
     }
 
     private int getIndexUuTien(String uuTien) {
         String[] array = getResources().getStringArray(R.array.muc_do_uu_tien_array);
-        for (int i = 0; i < array.length; i++) {
+        for (int i = 0; i < array.length; i++) 
             if (array[i].equals(uuTien)) return i;
-        }
         return 1;
     }
 }

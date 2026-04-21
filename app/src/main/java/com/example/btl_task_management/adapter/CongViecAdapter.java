@@ -38,32 +38,38 @@ public class CongViecAdapter extends RecyclerView.Adapter<CongViecAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        CongViec congViec = danhSachCongViec.get(position);
-        holder.tvTieuDe.setText(congViec.getTieuDe());
-        holder.tvMoTa.setText(congViec.getMoTa());
-        holder.tvNgayBatDau.setText("Bắt đầu: " + congViec.getNgayBatDau());
-        holder.tvNgayKetThuc.setText("Kết thúc: " + congViec.getNgayKetThuc());
-        holder.tvTrangThai.setText(congViec.getTrangThai());
-        holder.tvMucDoUuTien.setText(congViec.getMucDoUuTien());
-        if (congViec.getTrangThai().equals("Hoàn thành")) {
-            holder.tvTrangThai.setTextColor(Color.parseColor("#4CAF50"));
-        } else if (congViec.getTrangThai().equals("Đang thực hiện")) {
-            holder.tvTrangThai.setTextColor(Color.parseColor("#2196F3"));
-        } else {
-            holder.tvTrangThai.setTextColor(Color.parseColor("#FF9800"));
-        }
-        if (congViec.getMucDoUuTien().equals("Cao")) {
-            holder.tvMucDoUuTien.setTextColor(Color.parseColor("#F44336"));
-        } else if (congViec.getMucDoUuTien().equals("Trung bình")) {
-            holder.tvMucDoUuTien.setTextColor(Color.parseColor("#FF9800"));
-        } else {
-            holder.tvMucDoUuTien.setTextColor(Color.parseColor("#4CAF50"));
-        }
-        holder.cardView.setOnClickListener(v -> listener.onItemClick(congViec));
+        CongViec cv = danhSachCongViec.get(position);
+        holder.tvTieuDe.setText(cv.getTieuDe());
+        holder.tvMoTa.setText(cv.getMoTa());
+        holder.tvNgayBatDau.setText("Bắt đầu: " + cv.getNgayBatDau());
+        holder.tvNgayKetThuc.setText("Kết thúc: " + cv.getNgayKetThuc());
+        holder.tvTrangThai.setText(cv.getTrangThai());
+        holder.tvMucDoUuTien.setText(cv.getMucDoUuTien());
+        
+        holder.tvTrangThai.setTextColor(getMauTrangThai(cv.getTrangThai()));
+        holder.tvMucDoUuTien.setTextColor(getMauUuTien(cv.getMucDoUuTien()));
+        
+        holder.cardView.setOnClickListener(v -> listener.onItemClick(cv));
         holder.cardView.setOnLongClickListener(v -> {
-            listener.onItemLongClick(congViec);
+            listener.onItemLongClick(cv);
             return true;
         });
+    }
+
+    private int getMauTrangThai(String trangThai) {
+        switch (trangThai) {
+            case "Hoàn thành": return Color.parseColor("#4CAF50");
+            case "Đang thực hiện": return Color.parseColor("#2196F3");
+            default: return Color.parseColor("#FF9800");
+        }
+    }
+
+    private int getMauUuTien(String uuTien) {
+        switch (uuTien) {
+            case "Cao": return Color.parseColor("#F44336");
+            case "Trung bình": return Color.parseColor("#FF9800");
+            default: return Color.parseColor("#4CAF50");
+        }
     }
 
     @Override

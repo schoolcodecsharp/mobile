@@ -71,9 +71,9 @@ public class ThemCongViecDuAnActivity extends AppCompatActivity {
         
         List<NguoiDung> thanhVienKhac = dbHelper.layThanhVienDuAn(maDuAn);
         for (NguoiDung nd : thanhVienKhac) {
-            boolean daTonTai = danhSachThanhVien.stream()
-                .anyMatch(ndDaCo -> ndDaCo.getMaNguoiDung() == nd.getMaNguoiDung());
-            if (!daTonTai) danhSachThanhVien.add(nd);
+            if (danhSachThanhVien.stream().noneMatch(ndDaCo -> ndDaCo.getMaNguoiDung() == nd.getMaNguoiDung())) {
+                danhSachThanhVien.add(nd);
+            }
         }
     }
     
@@ -109,13 +109,8 @@ public class ThemCongViecDuAnActivity extends AppCompatActivity {
     
     private void themCongViec() {
         String tieuDe = edtTieuDe.getText().toString().trim();
-        String moTa = edtMoTa.getText().toString().trim();
-        String ngayBatDau = edtNgayBatDau.getText().toString().trim();
-        String ngayKetThuc = edtNgayKetThuc.getText().toString().trim();
-        String trangThai = spinnerTrangThai.getSelectedItem().toString();
-        String mucDoUuTien = spinnerUuTien.getSelectedItem().toString();
-        
-        if (tieuDe.isEmpty() || ngayBatDau.isEmpty() || ngayKetThuc.isEmpty()) {
+        if (tieuDe.isEmpty() || edtNgayBatDau.getText().toString().isEmpty() || 
+            edtNgayKetThuc.getText().toString().isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -124,37 +119,31 @@ public class ThemCongViecDuAnActivity extends AppCompatActivity {
             return;
         }
         
-        NguoiDung nguoiDuocGiao = danhSachThanhVien.get(spinnerThanhVien.getSelectedItemPosition());
+        NguoiDung nguoiGiao = danhSachThanhVien.get(spinnerThanhVien.getSelectedItemPosition());
+        CongViec cv = new CongViec();
+        cv.setMaNguoiDung(nguoiGiao.getMaNguoiDung());
+        cv.setMaDuAn(maDuAn);
+        cv.setMaNguoiDuocGiao(nguoiGiao.getMaNguoiDung());
+        cv.setMaNguoiTao(maNguoiTao);
+        cv.setDanhMuc("Dự án");
+        cv.setTieuDe(tieuDe);
+        cv.setMoTa(edtMoTa.getText().toString().trim());
+        cv.setNgayBatDau(edtNgayBatDau.getText().toString().trim());
+        cv.setNgayKetThuc(edtNgayKetThuc.getText().toString().trim());
+        cv.setTrangThai(spinnerTrangThai.getSelectedItem().toString());
+        cv.setMucDoUuTien(spinnerUuTien.getSelectedItem().toString());
         
-        CongViec congViec = new CongViec();
-        congViec.setMaNguoiDung(nguoiDuocGiao.getMaNguoiDung());
-        congViec.setMaDuAn(maDuAn);
-        congViec.setMaNguoiDuocGiao(nguoiDuocGiao.getMaNguoiDung());
-        congViec.setMaNguoiTao(maNguoiTao);
-        congViec.setDanhMuc("Dự án");
-        congViec.setTieuDe(tieuDe);
-        congViec.setMoTa(moTa);
-        congViec.setNgayBatDau(ngayBatDau);
-        congViec.setNgayKetThuc(ngayKetThuc);
-        congViec.setTrangThai(trangThai);
-        congViec.setMucDoUuTien(mucDoUuTien);
-        
-        long result = dbHelper.themCongViecDuAn(congViec);
+        long result = dbHelper.themCongViecDuAn(cv);
         String message = result > 0 ? "Thêm công việc thành công" : "Thêm công việc thất bại";
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         if (result > 0) finish();
     }
 
-    private void showDatePicker(final EditText editText) {
-        Calendar calendar = Calendar.getInstance();
+    private void showDatePicker(EditText editText) {
+        Calendar cal = Calendar.getInstance();
         new DatePickerDialog(this, 
-            (view, year, month, dayOfMonth) -> {
-                String date = String.format("%02d/%02d/%d", dayOfMonth, month + 1, year);
-                editText.setText(date);
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+            (view, year, month, day) -> editText.setText(String.format("%02d/%02d/%d", day, month + 1, year)),
+            cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)
         ).show();
     }
 }

@@ -46,40 +46,35 @@ public class ThongKeActivity extends AppCompatActivity {
 
     private void tinhThongKe() {
         List<CongViec> danhSach = dbHelper.layDanhSachCongViec(maNguoiDung);
-        int tongCongViec = danhSach.size();
-        int chuaHoanThanh = 0;
-        int dangThucHien = 0;
-        int hoanThanh = 0;
-        int uuTienCao = 0;
-        int uuTienTrungBinh = 0;
-        int uuTienThap = 0;
+        int[] trangThai = new int[3]; // [chua, dang, hoan]
+        int[] uuTien = new int[3]; // [cao, trungbinh, thap]
+        
         for (CongViec cv : danhSach) {
-            if (cv.getTrangThai().equals("Chưa hoàn thành")) {
-                chuaHoanThanh++;
-            } else if (cv.getTrangThai().equals("Đang thực hiện")) {
-                dangThucHien++;
-            } else if (cv.getTrangThai().equals("Hoàn thành")) {
-                hoanThanh++;
+            switch (cv.getTrangThai()) {
+                case "Chưa hoàn thành": trangThai[0]++; break;
+                case "Đang thực hiện": trangThai[1]++; break;
+                case "Hoàn thành": trangThai[2]++; break;
             }
-            if (cv.getMucDoUuTien().equals("Cao")) {
-                uuTienCao++;
-            } else if (cv.getMucDoUuTien().equals("Trung bình")) {
-                uuTienTrungBinh++;
-            } else if (cv.getMucDoUuTien().equals("Thấp")) {
-                uuTienThap++;
+            switch (cv.getMucDoUuTien()) {
+                case "Cao": uuTien[0]++; break;
+                case "Trung bình": uuTien[1]++; break;
+                case "Thấp": uuTien[2]++; break;
             }
         }
-        tvTongCongViec.setText(String.valueOf(tongCongViec));
-        tvChuaHoanThanh.setText(String.valueOf(chuaHoanThanh));
-        tvDangThucHien.setText(String.valueOf(dangThucHien));
-        tvHoanThanh.setText(String.valueOf(hoanThanh));
-        tvUuTienCao.setText(String.valueOf(uuTienCao));
-        tvUuTienTrungBinh.setText(String.valueOf(uuTienTrungBinh));
-        tvUuTienThap.setText(String.valueOf(uuTienThap));
-        if (tongCongViec > 0) {
-            tvTiLeHoanThanh.setText((hoanThanh * 100) / tongCongViec + "%");
-            tvTiLeDangLam.setText((dangThucHien * 100) / tongCongViec + "%");
-            tvTiLeChuaLam.setText((chuaHoanThanh * 100) / tongCongViec + "%");
+        
+        int tong = danhSach.size();
+        tvTongCongViec.setText(String.valueOf(tong));
+        tvChuaHoanThanh.setText(String.valueOf(trangThai[0]));
+        tvDangThucHien.setText(String.valueOf(trangThai[1]));
+        tvHoanThanh.setText(String.valueOf(trangThai[2]));
+        tvUuTienCao.setText(String.valueOf(uuTien[0]));
+        tvUuTienTrungBinh.setText(String.valueOf(uuTien[1]));
+        tvUuTienThap.setText(String.valueOf(uuTien[2]));
+        
+        if (tong > 0) {
+            tvTiLeHoanThanh.setText((trangThai[2] * 100) / tong + "%");
+            tvTiLeDangLam.setText((trangThai[1] * 100) / tong + "%");
+            tvTiLeChuaLam.setText((trangThai[0] * 100) / tong + "%");
         } else {
             tvTiLeHoanThanh.setText("0%");
             tvTiLeDangLam.setText("0%");

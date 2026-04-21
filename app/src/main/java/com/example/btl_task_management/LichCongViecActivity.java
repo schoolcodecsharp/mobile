@@ -109,17 +109,21 @@ public class LichCongViecActivity extends AppCompatActivity {
         });
     }
     
-    private int getGiaTriUuTien(String mucDoUuTien) {
-        if (mucDoUuTien.equals("Cao")) return 1;
-        if (mucDoUuTien.equals("Trung bình")) return 2;
-        if (mucDoUuTien.equals("Thấp")) return 3;
-        return 4;
+    private int getGiaTriUuTien(String uuTien) {
+        switch (uuTien) {
+            case "Cao": return 1;
+            case "Trung bình": return 2;
+            case "Thấp": return 3;
+            default: return 4;
+        }
     }
     
     private int getGiaTriTrangThai(String trangThai) {
-        if (trangThai.equals("Chưa hoàn thành")) return 1;
-        if (trangThai.equals("Đang thực hiện")) return 2;
-        if (trangThai.equals("Hoàn thành")) return 3;
-        return 4;
+        switch (trangThai) {
+            case "Chưa hoàn thành": return 1;
+            case "Đang thực hiện": return 2;
+            case "Hoàn thành": return 3;
+            default: return 4;
+        }
     }
 }

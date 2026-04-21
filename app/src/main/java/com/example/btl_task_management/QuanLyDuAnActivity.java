@@ -111,18 +111,18 @@ public class QuanLyDuAnActivity extends AppCompatActivity {
             return;
         }
         
-        NguoiDung nguoiDung = dbHelper.layNguoiDungTheoEmail(email);
-        if (nguoiDung == null) {
+        NguoiDung nd = dbHelper.layNguoiDungTheoEmail(email);
+        if (nd == null) {
             Toast.makeText(this, "Không tìm thấy người dùng với email này", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (nguoiDung.getLoaiTaiKhoan().equals("Admin")) {
+        if (nd.getLoaiTaiKhoan().equals("Admin")) {
             Toast.makeText(this, "Không thể thêm Admin vào dự án", Toast.LENGTH_SHORT).show();
             return;
         }
         
-        long result = dbHelper.themThanhVienDuAn(maDuAn, nguoiDung.getMaNguoiDung());
-        String message = result > 0 ? "Thêm thành viên thành công" : "Thêm thành viên thất bại hoặc đã tồn tại";
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        long result = dbHelper.themThanhVienDuAn(maDuAn, nd.getMaNguoiDung());
+        String msg = result > 0 ? "Thêm thành viên thành công" : "Thêm thành viên thất bại hoặc đã tồn tại";
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 }
