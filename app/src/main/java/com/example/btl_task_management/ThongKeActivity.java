@@ -24,8 +24,13 @@ public class ThongKeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thong_ke);
         dbHelper = new DatabaseHelper(this);
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        maNguoiDung = prefs.getInt("MaNguoiDung", -1);
+        maNguoiDung = getSharedPreferences("UserPrefs", MODE_PRIVATE).getInt("MaNguoiDung", -1);
+        initViews();
+        tinhThongKe();
+        btnQuayLai.setOnClickListener(v -> finish());
+    }
+
+    private void initViews() {
         tvTongCongViec = findViewById(R.id.tvTongCongViec);
         tvChuaHoanThanh = findViewById(R.id.tvChuaHoanThanh);
         tvDangThucHien = findViewById(R.id.tvDangThucHien);
@@ -37,13 +42,6 @@ public class ThongKeActivity extends AppCompatActivity {
         tvTiLeDangLam = findViewById(R.id.tvTiLeDangLam);
         tvTiLeChuaLam = findViewById(R.id.tvTiLeChuaLam);
         btnQuayLai = findViewById(R.id.btnQuayLai);
-        tinhThongKe();
-        btnQuayLai.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
     }
 
     private void tinhThongKe() {
@@ -79,12 +77,9 @@ public class ThongKeActivity extends AppCompatActivity {
         tvUuTienTrungBinh.setText(String.valueOf(uuTienTrungBinh));
         tvUuTienThap.setText(String.valueOf(uuTienThap));
         if (tongCongViec > 0) {
-            int tiLeHoanThanh = (hoanThanh * 100) / tongCongViec;
-            int tiLeDangLam = (dangThucHien * 100) / tongCongViec;
-            int tiLeChuaLam = (chuaHoanThanh * 100) / tongCongViec;
-            tvTiLeHoanThanh.setText(tiLeHoanThanh + "%");
-            tvTiLeDangLam.setText(tiLeDangLam + "%");
-            tvTiLeChuaLam.setText(tiLeChuaLam + "%");
+            tvTiLeHoanThanh.setText((hoanThanh * 100) / tongCongViec + "%");
+            tvTiLeDangLam.setText((dangThucHien * 100) / tongCongViec + "%");
+            tvTiLeChuaLam.setText((chuaHoanThanh * 100) / tongCongViec + "%");
         } else {
             tvTiLeHoanThanh.setText("0%");
             tvTiLeDangLam.setText("0%");

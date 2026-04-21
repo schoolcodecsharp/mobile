@@ -37,27 +37,14 @@ public class ChiTietCongViecActivity extends AppCompatActivity {
         if (congViec != null) {
             hienThiThongTin();
         }
-        btnSua.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ChiTietCongViecActivity.this, ThemCongViecActivity.class);
-                intent.putExtra("CongViec", (Serializable) congViec);
-                startActivity(intent);
-                finish();
-            }
+        btnSua.setOnClickListener(v -> {
+            Intent intent = new Intent(ChiTietCongViecActivity.this, ThemCongViecActivity.class);
+            intent.putExtra("CongViec", (Serializable) congViec);
+            startActivity(intent);
+            finish();
         });
-        btnXoa.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                xacNhanXoa();
-            }
-        });
-        btnQuayLai.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        btnXoa.setOnClickListener(v -> xacNhanXoa());
+        btnQuayLai.setOnClickListener(v -> finish());
     }
 
     private void hienThiThongTin() {
@@ -70,22 +57,16 @@ public class ChiTietCongViecActivity extends AppCompatActivity {
     }
 
     private void xacNhanXoa() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Xác nhận xóa");
-        builder.setMessage("Bạn có chắc chắn muốn xóa công việc này?");
-        builder.setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        new AlertDialog.Builder(this)
+            .setTitle("Xác nhận xóa")
+            .setMessage("Bạn có chắc chắn muốn xóa công việc này?")
+            .setPositiveButton("Xóa", (dialog, which) -> {
                 int result = dbHelper.xoaCongViec(congViec.getMaCongViec());
-                if (result > 0) {
-                    Toast.makeText(ChiTietCongViecActivity.this, "Xóa công việc thành công", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Toast.makeText(ChiTietCongViecActivity.this, "Xóa công việc thất bại", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        builder.setNegativeButton("Hủy", null);
-        builder.show();
+                String message = result > 0 ? "Xóa công việc thành công" : "Xóa công việc thất bại";
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                if (result > 0) finish();
+            })
+            .setNegativeButton("Hủy", null)
+            .show();
     }
 }

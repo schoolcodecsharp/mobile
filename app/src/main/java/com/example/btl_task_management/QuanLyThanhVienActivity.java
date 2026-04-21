@@ -29,6 +29,12 @@ public class QuanLyThanhVienActivity extends AppCompatActivity {
         setContentView(R.layout.activity_quan_ly_thanh_vien);
         dbHelper = new DatabaseHelper(this);
         maDuAn = getIntent().getIntExtra("MaDuAn", -1);
+        initViews();
+        taiDanhSachThanhVien();
+        setupListeners();
+    }
+
+    private void initViews() {
         recyclerViewThanhVien = findViewById(R.id.recyclerViewThanhVien);
         tvBack = findViewById(R.id.tvBack);
         tvDuAn = findViewById(R.id.tvDuAn);
@@ -36,73 +42,41 @@ public class QuanLyThanhVienActivity extends AppCompatActivity {
         tvThongKe = findViewById(R.id.tvThongKe);
         tvLich = findViewById(R.id.tvLich);
         recyclerViewThanhVien.setLayoutManager(new LinearLayoutManager(this));
-        taiDanhSachThanhVien();
-        tvBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
+    }
+
+    private void setupListeners() {
+        tvBack.setOnClickListener(v -> finish());
+        tvDuAn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, DanhSachDuAnActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         });
-        tvDuAn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(QuanLyThanhVienActivity.this, DanhSachDuAnActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-            }
+        tvCongViec.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         });
-        tvCongViec.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(QuanLyThanhVienActivity.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-            }
-        });
-        tvThongKe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(QuanLyThanhVienActivity.this, ThongKeActivity.class);
-                startActivity(intent);
-            }
-        });
-        tvLich.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(QuanLyThanhVienActivity.this, LichCongViecActivity.class);
-                startActivity(intent);
-            }
-        });
+        tvThongKe.setOnClickListener(v -> startActivity(new Intent(this, ThongKeActivity.class)));
+        tvLich.setOnClickListener(v -> startActivity(new Intent(this, LichCongViecActivity.class)));
     }
 
     private void taiDanhSachThanhVien() {
         danhSachThanhVien = dbHelper.layThanhVienDuAn(maDuAn);
-        adapter = new ThanhVienAdapter(this, danhSachThanhVien, new ThanhVienAdapter.OnItemClickListener() {
-            @Override
-            public void onXoaClick(NguoiDung nguoiDung) {
-                xacNhanXoa(nguoiDung);
-            }
-        });
+        adapter = new ThanhVienAdapter(this, danhSachThanhVien, this::xacNhanXoa);
         recyclerViewThanhVien.setAdapter(adapter);
     }
 
-    private void xacNhanXoa(final NguoiDung nguoiDung) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Xác nhận xóa");
-        builder.setMessage("Bạn có chắc chắn muốn xóa " + nguoiDung.getTenNguoiDung() + " khỏi dự án?");
-        builder.setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+    private void xacNhanXoa(NguoiDung nguoiDung) {
+        new AlertDialog.Builder(this)
+            .setTitle("Xác nhận xóa")
+            .setMessage("Bạn có chắc chắn muốn xóa " + nguoiDung.getTenNguoiDung() + " khỏi dự án?")
+            .setPositiveButton("Xóa", (dialog, which) -> {
                 int result = dbHelper.xoaThanhVienDuAn(maDuAn, nguoiDung.getMaNguoiDung());
-                if (result > 0) {
-                    Toast.makeText(QuanLyThanhVienActivity.this, "Xóa thành viên thành công", Toast.LENGTH_SHORT).show();
-                    taiDanhSachThanhVien();
-                } else {
-                    Toast.makeText(QuanLyThanhVienActivity.this, "Xóa thành viên thất bại", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        builder.setNegativeButton("Hủy", null);
-        builder.show();
+                String message = result > 0 ? "Xóa thành viên thành công" : "Xóa thành viên thất bại";
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                if (result > 0) taiDanhSachThanhVien();
+            })
+            .setNegativeButton("Hủy", null)
+            .show();
     }
 }

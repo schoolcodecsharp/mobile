@@ -24,38 +24,37 @@ public class ThemDuAnActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_them_du_an);
         dbHelper = new DatabaseHelper(this);
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        maNguoiDung = prefs.getInt("MaNguoiDung", -1);
+        maNguoiDung = getSharedPreferences("UserPrefs", MODE_PRIVATE).getInt("MaNguoiDung", -1);
+        initViews();
+        setupListeners();
+    }
+
+    private void initViews() {
         edtTenDuAn = findViewById(R.id.edtTenDuAn);
         edtMoTaDuAn = findViewById(R.id.edtMoTaDuAn);
         btnTaoDuAn = findViewById(R.id.btnTaoDuAn);
         btnHuy = findViewById(R.id.btnHuy);
-        btnTaoDuAn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String tenDuAn = edtTenDuAn.getText().toString().trim();
-                String moTa = edtMoTaDuAn.getText().toString().trim();
-                if (tenDuAn.isEmpty()) {
-                    Toast.makeText(ThemDuAnActivity.this, "Vui lòng nhập tên dự án", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                String ngayTao = sdf.format(new Date());
-                DuAn duAn = new DuAn(tenDuAn, moTa, maNguoiDung, ngayTao);
-                long result = dbHelper.themDuAn(duAn);
-                if (result > 0) {
-                    Toast.makeText(ThemDuAnActivity.this, "Tạo dự án thành công", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Toast.makeText(ThemDuAnActivity.this, "Tạo dự án thất bại", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        btnHuy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+    }
+
+    private void setupListeners() {
+        btnTaoDuAn.setOnClickListener(v -> taoDuAn());
+        btnHuy.setOnClickListener(v -> finish());
+    }
+
+    private void taoDuAn() {
+        String tenDuAn = edtTenDuAn.getText().toString().trim();
+        String moTa = edtMoTaDuAn.getText().toString().trim();
+
+        if (tenDuAn.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập tên dự án", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String ngayTao = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+        DuAn duAn = new DuAn(tenDuAn, moTa, maNguoiDung, ngayTao);
+        long result = dbHelper.themDuAn(duAn);
+        String message = result > 0 ? "Tạo dự án thành công" : "Tạo dự án thất bại";
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        if (result > 0) finish();
     }
 }

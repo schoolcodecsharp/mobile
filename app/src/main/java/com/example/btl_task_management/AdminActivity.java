@@ -46,30 +46,16 @@ public class AdminActivity extends AppCompatActivity {
         tvTenAdmin.setText("Xin chào, " + tenNguoiDung + " (Admin)");
         recyclerViewNguoiDung.setLayoutManager(new LinearLayoutManager(this));
         taiDanhSachNguoiDung();
-        fabThemNguoiDung.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AdminActivity.this, ThemSuaNguoiDungActivity.class);
-                startActivity(intent);
-            }
-        });
-        tvChuyenSangUser.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AdminActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
-        tvDangXuat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.clear();
-                editor.apply();
-                Intent intent = new Intent(AdminActivity.this, DangNhapActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        fabThemNguoiDung.setOnClickListener(v -> 
+            startActivity(new Intent(AdminActivity.this, ThemSuaNguoiDungActivity.class)));
+        
+        tvChuyenSangUser.setOnClickListener(v -> 
+            startActivity(new Intent(AdminActivity.this, MainActivity.class)));
+        
+        tvDangXuat.setOnClickListener(v -> {
+            prefs.edit().clear().apply();
+            startActivity(new Intent(AdminActivity.this, DangNhapActivity.class));
+            finish();
         });
     }
 
@@ -81,50 +67,31 @@ public class AdminActivity extends AppCompatActivity {
 
     private void taiDanhSachNguoiDung() {
         danhSachNguoiDung = dbHelper.layDanhSachNguoiDung();
-        adapter = new ThanhVienAdapter(this, danhSachNguoiDung, new ThanhVienAdapter.OnItemClickListener() {
-            @Override
-            public void onXoaClick(NguoiDung nguoiDung) {
-                xacNhanXoa(nguoiDung);
-            }
-        });
-        adapter.setOnItemClickListener(new ThanhVienAdapter.OnItemClickListener() {
-            @Override
-            public void onXoaClick(NguoiDung nguoiDung) {
-                xacNhanXoa(nguoiDung);
-            }
-        });
-        adapter.setOnItemLongClickListener(new ThanhVienAdapter.OnItemLongClickListener() {
-            @Override
-            public void onItemLongClick(NguoiDung nguoiDung) {
-                Intent intent = new Intent(AdminActivity.this, ThemSuaNguoiDungActivity.class);
-                intent.putExtra("MaNguoiDung", nguoiDung.getMaNguoiDung());
-                intent.putExtra("TenNguoiDung", nguoiDung.getTenNguoiDung());
-                intent.putExtra("Email", nguoiDung.getEmail());
-                intent.putExtra("MatKhau", nguoiDung.getMatKhau());
-                intent.putExtra("LoaiTaiKhoan", nguoiDung.getLoaiTaiKhoan());
-                startActivity(intent);
-            }
+        adapter = new ThanhVienAdapter(this, danhSachNguoiDung, this::xacNhanXoa);
+        adapter.setOnItemClickListener(this::xacNhanXoa);
+        adapter.setOnItemLongClickListener(nguoiDung -> {
+            Intent intent = new Intent(AdminActivity.this, ThemSuaNguoiDungActivity.class);
+            intent.putExtra("MaNguoiDung", nguoiDung.getMaNguoiDung());
+            intent.putExtra("TenNguoiDung", nguoiDung.getTenNguoiDung());
+            intent.putExtra("Email", nguoiDung.getEmail());
+            intent.putExtra("MatKhau", nguoiDung.getMatKhau());
+            intent.putExtra("LoaiTaiKhoan", nguoiDung.getLoaiTaiKhoan());
+            startActivity(intent);
         });
         recyclerViewNguoiDung.setAdapter(adapter);
     }
 
     private void xacNhanXoa(final NguoiDung nguoiDung) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Xác nhận xóa");
-        builder.setMessage("Bạn có chắc chắn muốn xóa tài khoản " + nguoiDung.getTenNguoiDung() + "?");
-        builder.setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        new AlertDialog.Builder(this)
+            .setTitle("Xác nhận xóa")
+            .setMessage("Bạn có chắc chắn muốn xóa tài khoản " + nguoiDung.getTenNguoiDung() + "?")
+            .setPositiveButton("Xóa", (dialog, which) -> {
                 int result = dbHelper.xoaNguoiDung(nguoiDung.getMaNguoiDung());
-                if (result > 0) {
-                    Toast.makeText(AdminActivity.this, "Xóa tài khoản thành công", Toast.LENGTH_SHORT).show();
-                    taiDanhSachNguoiDung();
-                } else {
-                    Toast.makeText(AdminActivity.this, "Xóa tài khoản thất bại", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        builder.setNegativeButton("Hủy", null);
-        builder.show();
+                String message = result > 0 ? "Xóa tài khoản thành công" : "Xóa tài khoản thất bại";
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                if (result > 0) taiDanhSachNguoiDung();
+            })
+            .setNegativeButton("Hủy", null)
+            .show();
     }
 }

@@ -31,50 +31,42 @@ public class LichCongViecActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lich_cong_viec);
         dbHelper = new DatabaseHelper(this);
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        maNguoiDung = prefs.getInt("MaNguoiDung", -1);
+        maNguoiDung = getSharedPreferences("UserPrefs", MODE_PRIVATE).getInt("MaNguoiDung", -1);
+        initViews();
+        setupListeners();
+    }
+
+    private void initViews() {
         calendarView = findViewById(R.id.calendarView);
         recyclerView = findViewById(R.id.recyclerView);
         tvNgayChon = findViewById(R.id.tvNgayChon);
         tvKhongCoCongViec = findViewById(R.id.tvKhongCoCongViec);
         btnQuayLai = findViewById(R.id.btnQuayLai);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                ngayChon = String.format("%02d/%02d/%d", dayOfMonth, month + 1, year);
-                tvNgayChon.setText("Công việc ngày: " + ngayChon);
-                hienThiCongViecTheoNgay();
-            }
+    }
+
+    private void setupListeners() {
+        calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            ngayChon = String.format("%02d/%02d/%d", dayOfMonth, month + 1, year);
+            tvNgayChon.setText("Công việc ngày: " + ngayChon);
+            hienThiCongViecTheoNgay();
         });
-        btnQuayLai.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        btnQuayLai.setOnClickListener(v -> finish());
     }
 
     private void hienThiCongViecTheoNgay() {
-        // Lấy tất cả công việc của user
         List<CongViec> tatCaCongViec = dbHelper.layDanhSachCongViec(maNguoiDung);
         List<CongViec> congViecTheoNgay = new ArrayList<>();
         
-        // Lọc công việc theo ngày đã chọn
         for (CongViec cv : tatCaCongViec) {
-            // Kiểm tra công việc có ngày không (không rỗng)
-            if (!cv.getNgayBatDau().isEmpty() && !cv.getNgayKetThuc().isEmpty()) {
-                // Kiểm tra ngày chọn có nằm trong khoảng [ngayBatDau, ngayKetThuc] không
-                if (laNgayTrongKhoang(ngayChon, cv.getNgayBatDau(), cv.getNgayKetThuc())) {
-                    congViecTheoNgay.add(cv);
-                }
+            if (!cv.getNgayBatDau().isEmpty() && !cv.getNgayKetThuc().isEmpty() &&
+                laNgayTrongKhoang(ngayChon, cv.getNgayBatDau(), cv.getNgayKetThuc())) {
+                congViecTheoNgay.add(cv);
             }
         }
         
-        // Sắp xếp: Ưu tiên (Cao → Trung bình → Thấp) → Trạng thái (Chưa → Đang → Hoàn thành)
         sapXepCongViec(congViecTheoNgay);
         
-        // Hiển thị kết quả
         if (congViecTheoNgay.isEmpty()) {
             tvKhongCoCongViec.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
@@ -88,10 +80,8 @@ public class LichCongViecActivity extends AppCompatActivity {
                     intent.putExtra("CongViec", (Serializable) congViec);
                     startActivity(intent);
                 }
-
                 @Override
-                public void onItemLongClick(CongViec congViec) {
-                }
+                public void onItemLongClick(CongViec congViec) {}
             });
             recyclerView.setAdapter(adapter);
         }
@@ -111,21 +101,11 @@ public class LichCongViecActivity extends AppCompatActivity {
     }
     
     private void sapXepCongViec(List<CongViec> danhSach) {
-        java.util.Collections.sort(danhSach, new java.util.Comparator<CongViec>() {
-            @Override
-            public int compare(CongViec cv1, CongViec cv2) {
-                int uuTien1 = getGiaTriUuTien(cv1.getMucDoUuTien());
-                int uuTien2 = getGiaTriUuTien(cv2.getMucDoUuTien());
-                
-                if (uuTien1 != uuTien2) {
-                    return uuTien1 - uuTien2;
-                }
-                
-                int trangThai1 = getGiaTriTrangThai(cv1.getTrangThai());
-                int trangThai2 = getGiaTriTrangThai(cv2.getTrangThai());
-                
-                return trangThai1 - trangThai2;
-            }
+        java.util.Collections.sort(danhSach, (cv1, cv2) -> {
+            int uuTien1 = getGiaTriUuTien(cv1.getMucDoUuTien());
+            int uuTien2 = getGiaTriUuTien(cv2.getMucDoUuTien());
+            if (uuTien1 != uuTien2) return uuTien1 - uuTien2;
+            return getGiaTriTrangThai(cv1.getTrangThai()) - getGiaTriTrangThai(cv2.getTrangThai());
         });
     }
     

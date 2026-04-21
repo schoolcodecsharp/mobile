@@ -52,23 +52,15 @@ public class ThanhVienAdapter extends RecyclerView.Adapter<ThanhVienAdapter.Than
         NguoiDung nguoiDung = danhSachThanhVien.get(position);
         holder.tvTenThanhVien.setText(nguoiDung.getTenNguoiDung());
         holder.tvEmailThanhVien.setText(nguoiDung.getEmail());
-        holder.btnXoaThanhVien.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    listener.onXoaClick(nguoiDung);
-                }
-            }
+        holder.btnXoaThanhVien.setOnClickListener(v -> {
+            if (listener != null) listener.onXoaClick(nguoiDung);
         });
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (longClickListener != null) {
-                    longClickListener.onItemLongClick(nguoiDung);
-                    return true;
-                }
-                return false;
+        holder.itemView.setOnLongClickListener(v -> {
+            if (longClickListener != null) {
+                longClickListener.onItemLongClick(nguoiDung);
+                return true;
             }
+            return false;
         });
     }
 

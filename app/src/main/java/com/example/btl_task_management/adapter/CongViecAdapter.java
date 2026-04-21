@@ -59,18 +59,10 @@ public class CongViecAdapter extends RecyclerView.Adapter<CongViecAdapter.ViewHo
         } else {
             holder.tvMucDoUuTien.setTextColor(Color.parseColor("#4CAF50"));
         }
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onItemClick(congViec);
-            }
-        });
-        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                listener.onItemLongClick(congViec);
-                return true;
-            }
+        holder.cardView.setOnClickListener(v -> listener.onItemClick(congViec));
+        holder.cardView.setOnLongClickListener(v -> {
+            listener.onItemLongClick(congViec);
+            return true;
         });
     }
 

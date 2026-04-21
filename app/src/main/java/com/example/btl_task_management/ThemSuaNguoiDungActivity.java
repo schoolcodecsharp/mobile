@@ -56,42 +56,40 @@ public class ThemSuaNguoiDungActivity extends AppCompatActivity {
             tvTieuDe.setText("THÊM TÀI KHOẢN MỚI");
             btnLuu.setText("THÊM");
         }
-        btnLuu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String tenNguoiDung = edtTenNguoiDung.getText().toString().trim();
-                String email = edtEmail.getText().toString().trim();
-                String matKhau = edtMatKhau.getText().toString().trim();
-                String loaiTaiKhoan = spinnerLoaiTaiKhoan.getSelectedItem().toString();
-                if (tenNguoiDung.isEmpty() || email.isEmpty() || matKhau.isEmpty()) {
-                    Toast.makeText(ThemSuaNguoiDungActivity.this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (isEdit) {
-                    int result = dbHelper.capNhatNguoiDung(maNguoiDung, tenNguoiDung, email, matKhau, loaiTaiKhoan);
-                    if (result > 0) {
-                        Toast.makeText(ThemSuaNguoiDungActivity.this, "Cập nhật tài khoản thành công", Toast.LENGTH_SHORT).show();
-                        finish();
-                    } else {
-                        Toast.makeText(ThemSuaNguoiDungActivity.this, "Cập nhật tài khoản thất bại", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    NguoiDung nguoiDung = new NguoiDung(tenNguoiDung, email, matKhau, loaiTaiKhoan);
-                    long result = dbHelper.themNguoiDung(nguoiDung);
-                    if (result > 0) {
-                        Toast.makeText(ThemSuaNguoiDungActivity.this, "Thêm tài khoản thành công", Toast.LENGTH_SHORT).show();
-                        finish();
-                    } else {
-                        Toast.makeText(ThemSuaNguoiDungActivity.this, "Thêm tài khoản thất bại. Email có thể đã tồn tại", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
-        btnHuy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        btnLuu.setOnClickListener(v -> luuNguoiDung());
+        btnHuy.setOnClickListener(v -> finish());
+    }
+    
+    private void luuNguoiDung() {
+        String tenNguoiDung = edtTenNguoiDung.getText().toString().trim();
+        String email = edtEmail.getText().toString().trim();
+        String matKhau = edtMatKhau.getText().toString().trim();
+        String loaiTaiKhoan = spinnerLoaiTaiKhoan.getSelectedItem().toString();
+        
+        if (tenNguoiDung.isEmpty() || email.isEmpty() || matKhau.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        if (isEdit) {
+            capNhatNguoiDung(tenNguoiDung, email, matKhau, loaiTaiKhoan);
+        } else {
+            themNguoiDungMoi(tenNguoiDung, email, matKhau, loaiTaiKhoan);
+        }
+    }
+    
+    private void capNhatNguoiDung(String ten, String email, String matKhau, String loaiTK) {
+        int result = dbHelper.capNhatNguoiDung(maNguoiDung, ten, email, matKhau, loaiTK);
+        String message = result > 0 ? "Cập nhật tài khoản thành công" : "Cập nhật tài khoản thất bại";
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        if (result > 0) finish();
+    }
+    
+    private void themNguoiDungMoi(String ten, String email, String matKhau, String loaiTK) {
+        NguoiDung nguoiDung = new NguoiDung(ten, email, matKhau, loaiTK);
+        long result = dbHelper.themNguoiDung(nguoiDung);
+        String message = result > 0 ? "Thêm tài khoản thành công" : "Thêm tài khoản thất bại. Email có thể đã tồn tại";
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        if (result > 0) finish();
     }
 }

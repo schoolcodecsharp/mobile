@@ -73,89 +73,48 @@ public class MainActivity extends AppCompatActivity {
         taiDanhSachCongViec();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
+            public boolean onQueryTextSubmit(String query) { return false; }
             @Override
             public boolean onQueryTextChange(String newText) {
                 locCongViec();
                 return true;
             }
         });
-        spinnerLocTrangThai.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        
+        AdapterView.OnItemSelectedListener spinnerListener = new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 locCongViec();
             }
-
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
+        };
+        
+        spinnerLocTrangThai.setOnItemSelectedListener(spinnerListener);
+        spinnerLocDanhMuc.setOnItemSelectedListener(spinnerListener);
+        fabThem.setOnClickListener(v -> 
+            startActivity(new Intent(MainActivity.this, ThemCongViecActivity.class)));
+        
+        tvQuayLaiAdmin.setOnClickListener(v -> 
+            startActivity(new Intent(MainActivity.this, AdminActivity.class)));
+        
+        tvDangXuat.setOnClickListener(v -> {
+            prefs.edit().clear().apply();
+            startActivity(new Intent(MainActivity.this, DangNhapActivity.class));
+            finish();
         });
-        spinnerLocDanhMuc.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                locCongViec();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-        fabThem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ThemCongViecActivity.class);
-                startActivity(intent);
-            }
-        });
-        tvQuayLaiAdmin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AdminActivity.class);
-                startActivity(intent);
-            }
-        });
-        tvDangXuat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.clear();
-                editor.apply();
-                Intent intent = new Intent(MainActivity.this, DangNhapActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-        tvDuAn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, DanhSachDuAnActivity.class);
-                startActivity(intent);
-            }
-        });
-        tvThongKe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ThongKeActivity.class);
-                startActivity(intent);
-            }
-        });
-        tvLich.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, LichCongViecActivity.class);
-                startActivity(intent);
-            }
-        });
-        tvThongTinCaNhan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ThongTinCaNhanActivity.class);
-                startActivity(intent);
-            }
-        });
+        
+        tvDuAn.setOnClickListener(v -> 
+            startActivity(new Intent(MainActivity.this, DanhSachDuAnActivity.class)));
+        
+        tvThongKe.setOnClickListener(v -> 
+            startActivity(new Intent(MainActivity.this, ThongKeActivity.class)));
+        
+        tvLich.setOnClickListener(v -> 
+            startActivity(new Intent(MainActivity.this, LichCongViecActivity.class)));
+        
+        tvThongTinCaNhan.setOnClickListener(v -> 
+            startActivity(new Intent(MainActivity.this, ThongTinCaNhanActivity.class)));
     }
 
     @Override
@@ -272,22 +231,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void xacNhanXoa(final CongViec congViec) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Xác nhận xóa");
-        builder.setMessage("Bạn có chắc chắn muốn xóa công việc này?");
-        builder.setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        new AlertDialog.Builder(this)
+            .setTitle("Xác nhận xóa")
+            .setMessage("Bạn có chắc chắn muốn xóa công việc này?")
+            .setPositiveButton("Xóa", (dialog, which) -> {
                 int result = dbHelper.xoaCongViec(congViec.getMaCongViec());
-                if (result > 0) {
-                    Toast.makeText(MainActivity.this, "Xóa công việc thành công", Toast.LENGTH_SHORT).show();
-                    taiDanhSachCongViec();
-                } else {
-                    Toast.makeText(MainActivity.this, "Xóa công việc thất bại", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        builder.setNegativeButton("Hủy", null);
-        builder.show();
+                String message = result > 0 ? "Xóa công việc thành công" : "Xóa công việc thất bại";
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                if (result > 0) taiDanhSachCongViec();
+            })
+            .setNegativeButton("Hủy", null)
+            .show();
     }
 }

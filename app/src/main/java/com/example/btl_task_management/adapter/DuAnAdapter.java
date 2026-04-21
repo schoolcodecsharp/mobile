@@ -39,12 +39,7 @@ public class DuAnAdapter extends RecyclerView.Adapter<DuAnAdapter.DuAnViewHolder
         holder.tvTenDuAn.setText(duAn.getTenDuAn());
         holder.tvMoTaDuAn.setText(duAn.getMoTa());
         holder.tvNgayTao.setText("Ngày tạo: " + duAn.getNgayTao());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onItemClick(duAn);
-            }
-        });
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(duAn));
     }
 
     @Override

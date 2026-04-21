@@ -27,9 +27,17 @@ public class ThemCongViecActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_them_cong_viec);
+        
         dbHelper = new DatabaseHelper(this);
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        maNguoiDung = prefs.getInt("MaNguoiDung", -1);
+        maNguoiDung = getSharedPreferences("UserPrefs", MODE_PRIVATE).getInt("MaNguoiDung", -1);
+        
+        initViews();
+        setupSpinners();
+        loadDataIfEdit();
+        setupListeners();
+    }
+    
+    private void initViews() {
         edtTieuDe = findViewById(R.id.edtTieuDe);
         edtMoTa = findViewById(R.id.edtMoTa);
         edtNgayBatDau = findViewById(R.id.edtNgayBatDau);
@@ -39,67 +47,52 @@ public class ThemCongViecActivity extends AppCompatActivity {
         spinnerMucDoUuTien = findViewById(R.id.spinnerMucDoUuTien);
         btnLuu = findViewById(R.id.btnLuu);
         btnHuy = findViewById(R.id.btnHuy);
+    }
+    
+    private void setupSpinners() {
         String[] danhMuc = {"Cá nhân", "Học tập", "Công việc"};
         ArrayAdapter<String> adapterDanhMuc = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, danhMuc);
         adapterDanhMuc.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDanhMuc.setAdapter(adapterDanhMuc);
+        
         ArrayAdapter<CharSequence> adapterTrangThai = ArrayAdapter.createFromResource(this, R.array.trang_thai_array, android.R.layout.simple_spinner_item);
         adapterTrangThai.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerTrangThai.setAdapter(adapterTrangThai);
+        
         ArrayAdapter<CharSequence> adapterUuTien = ArrayAdapter.createFromResource(this, R.array.muc_do_uu_tien_array, android.R.layout.simple_spinner_item);
         adapterUuTien.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerMucDoUuTien.setAdapter(adapterUuTien);
+    }
+    
+    private void loadDataIfEdit() {
         if (getIntent().hasExtra("CongViec")) {
             congViecSua = (CongViec) getIntent().getSerializableExtra("CongViec");
             edtTieuDe.setText(congViecSua.getTieuDe());
             edtMoTa.setText(congViecSua.getMoTa());
             edtNgayBatDau.setText(congViecSua.getNgayBatDau());
             edtNgayKetThuc.setText(congViecSua.getNgayKetThuc());
+            
             if (congViecSua.getDanhMuc() != null) {
                 spinnerDanhMuc.setSelection(getIndexDanhMuc(congViecSua.getDanhMuc()));
             }
             spinnerTrangThai.setSelection(getIndexTrangThai(congViecSua.getTrangThai()));
             spinnerMucDoUuTien.setSelection(getIndexUuTien(congViecSua.getMucDoUuTien()));
         }
-        edtNgayBatDau.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePicker(edtNgayBatDau);
-            }
-        });
-        edtNgayKetThuc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePicker(edtNgayKetThuc);
-            }
-        });
-        btnLuu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                luuCongViec();
-            }
-        });
-        btnHuy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+    }
+    
+    private void setupListeners() {
+        edtNgayBatDau.setOnClickListener(v -> showDatePicker(edtNgayBatDau));
+        edtNgayKetThuc.setOnClickListener(v -> showDatePicker(edtNgayKetThuc));
+        btnLuu.setOnClickListener(v -> luuCongViec());
+        btnHuy.setOnClickListener(v -> finish());
     }
 
-    private void showDatePicker(final EditText editText) {
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String date = String.format("%02d/%02d/%d", dayOfMonth, month + 1, year);
-                editText.setText(date);
-            }
-        }, year, month, day);
-        datePickerDialog.show();
+    private void showDatePicker(EditText editText) {
+        Calendar cal = Calendar.getInstance();
+        new DatePickerDialog(this, (view, year, month, day) -> 
+            editText.setText(String.format("%02d/%02d/%d", day, month + 1, year)),
+            cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)
+        ).show();
     }
 
     private void luuCongViec() {

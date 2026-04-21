@@ -27,10 +27,16 @@ public class DanhSachDuAnActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_danh_sach_du_an);
+        dbHelper = new DatabaseHelper(this);
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         maNguoiDung = prefs.getInt("MaNguoiDung", -1);
-        String tenNguoiDung = prefs.getString("TenNguoiDung", "");
-        dbHelper = new DatabaseHelper(this);
+        initViews();
+        tvTenNguoiDung.setText("Dự án của " + prefs.getString("TenNguoiDung", ""));
+        taiDanhSachDuAn();
+        setupListeners();
+    }
+
+    private void initViews() {
         recyclerViewDuAn = findViewById(R.id.recyclerViewDuAn);
         fabThemDuAn = findViewById(R.id.fabThemDuAn);
         tvBack = findViewById(R.id.tvBack);
@@ -39,49 +45,16 @@ public class DanhSachDuAnActivity extends AppCompatActivity {
         tvThongKe = findViewById(R.id.tvThongKe);
         tvLich = findViewById(R.id.tvLich);
         tvThongTinCaNhan = findViewById(R.id.tvThongTinCaNhan);
-        tvTenNguoiDung.setText("Dự án của " + tenNguoiDung);
         recyclerViewDuAn.setLayoutManager(new LinearLayoutManager(this));
-        taiDanhSachDuAn();
-        fabThemDuAn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(DanhSachDuAnActivity.this, ThemDuAnActivity.class);
-                startActivity(intent);
-            }
-        });
-        tvBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-        tvCongViec.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-        tvThongKe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(DanhSachDuAnActivity.this, ThongKeActivity.class);
-                startActivity(intent);
-            }
-        });
-        tvLich.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(DanhSachDuAnActivity.this, LichCongViecActivity.class);
-                startActivity(intent);
-            }
-        });
-        tvThongTinCaNhan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(DanhSachDuAnActivity.this, ThongTinCaNhanActivity.class);
-                startActivity(intent);
-            }
-        });
+    }
+
+    private void setupListeners() {
+        fabThemDuAn.setOnClickListener(v -> startActivity(new Intent(this, ThemDuAnActivity.class)));
+        tvBack.setOnClickListener(v -> finish());
+        tvCongViec.setOnClickListener(v -> finish());
+        tvThongKe.setOnClickListener(v -> startActivity(new Intent(this, ThongKeActivity.class)));
+        tvLich.setOnClickListener(v -> startActivity(new Intent(this, LichCongViecActivity.class)));
+        tvThongTinCaNhan.setOnClickListener(v -> startActivity(new Intent(this, ThongTinCaNhanActivity.class)));
     }
 
     @Override
@@ -92,13 +65,10 @@ public class DanhSachDuAnActivity extends AppCompatActivity {
 
     private void taiDanhSachDuAn() {
         danhSachDuAn = dbHelper.layDanhSachDuAn(maNguoiDung);
-        adapter = new DuAnAdapter(this, danhSachDuAn, new DuAnAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(DuAn duAn) {
-                Intent intent = new Intent(DanhSachDuAnActivity.this, QuanLyDuAnActivity.class);
-                intent.putExtra("MaDuAn", duAn.getMaDuAn());
-                startActivity(intent);
-            }
+        adapter = new DuAnAdapter(this, danhSachDuAn, duAn -> {
+            Intent intent = new Intent(this, QuanLyDuAnActivity.class);
+            intent.putExtra("MaDuAn", duAn.getMaDuAn());
+            startActivity(intent);
         });
         recyclerViewDuAn.setAdapter(adapter);
     }

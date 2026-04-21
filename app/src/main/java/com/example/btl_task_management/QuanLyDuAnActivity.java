@@ -55,34 +55,21 @@ public class QuanLyDuAnActivity extends AppCompatActivity {
         tvMoTaDuAn.setText(duAn.getMoTa());
         recyclerViewCongViec.setLayoutManager(new LinearLayoutManager(this));
         taiDanhSachCongViec();
-        tvBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
+        tvBack.setOnClickListener(v -> finish());
+        
+        fabThemCongViec.setOnClickListener(v -> {
+            Intent intent = new Intent(QuanLyDuAnActivity.this, ThemCongViecDuAnActivity.class);
+            intent.putExtra("MaDuAn", maDuAn);
+            startActivity(intent);
         });
-        fabThemCongViec.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(QuanLyDuAnActivity.this, ThemCongViecDuAnActivity.class);
-                intent.putExtra("MaDuAn", maDuAn);
-                startActivity(intent);
-            }
+        
+        btnQuanLyThanhVien.setOnClickListener(v -> {
+            Intent intent = new Intent(QuanLyDuAnActivity.this, QuanLyThanhVienActivity.class);
+            intent.putExtra("MaDuAn", maDuAn);
+            startActivity(intent);
         });
-        btnQuanLyThanhVien.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(QuanLyDuAnActivity.this, QuanLyThanhVienActivity.class);
-                intent.putExtra("MaDuAn", maDuAn);
-                startActivity(intent);
-            }
-        });
-        btnThemThanhVien.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hienThiDialogThemThanhVien();
-            }
-        });
+        
+        btnThemThanhVien.setOnClickListener(v -> hienThiDialogThemThanhVien());
     }
 
     @Override
@@ -100,46 +87,42 @@ public class QuanLyDuAnActivity extends AppCompatActivity {
                 intent.putExtra("CongViec", (Serializable) congViec);
                 startActivity(intent);
             }
-
             @Override
-            public void onItemLongClick(CongViec congViec) {
-            }
+            public void onItemLongClick(CongViec congViec) {}
         });
         recyclerViewCongViec.setAdapter(adapter);
     }
 
     private void hienThiDialogThemThanhVien() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Thêm thành viên vào dự án");
         final EditText edtEmail = new EditText(this);
         edtEmail.setHint("Nhập email người dùng");
-        builder.setView(edtEmail);
-        builder.setPositiveButton("Thêm", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String email = edtEmail.getText().toString().trim();
-                if (email.isEmpty()) {
-                    Toast.makeText(QuanLyDuAnActivity.this, "Vui lòng nhập email", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                NguoiDung nguoiDung = dbHelper.layNguoiDungTheoEmail(email);
-                if (nguoiDung == null) {
-                    Toast.makeText(QuanLyDuAnActivity.this, "Không tìm thấy người dùng với email này", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (nguoiDung.getLoaiTaiKhoan().equals("Admin")) {
-                    Toast.makeText(QuanLyDuAnActivity.this, "Không thể thêm Admin vào dự án", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                long result = dbHelper.themThanhVienDuAn(maDuAn, nguoiDung.getMaNguoiDung());
-                if (result > 0) {
-                    Toast.makeText(QuanLyDuAnActivity.this, "Thêm thành viên thành công", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(QuanLyDuAnActivity.this, "Thêm thành viên thất bại hoặc đã tồn tại", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        builder.setNegativeButton("Hủy", null);
-        builder.show();
+        
+        new AlertDialog.Builder(this)
+            .setTitle("Thêm thành viên vào dự án")
+            .setView(edtEmail)
+            .setPositiveButton("Thêm", (dialog, which) -> themThanhVien(edtEmail.getText().toString().trim()))
+            .setNegativeButton("Hủy", null)
+            .show();
+    }
+    
+    private void themThanhVien(String email) {
+        if (email.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập email", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        NguoiDung nguoiDung = dbHelper.layNguoiDungTheoEmail(email);
+        if (nguoiDung == null) {
+            Toast.makeText(this, "Không tìm thấy người dùng với email này", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (nguoiDung.getLoaiTaiKhoan().equals("Admin")) {
+            Toast.makeText(this, "Không thể thêm Admin vào dự án", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        long result = dbHelper.themThanhVienDuAn(maDuAn, nguoiDung.getMaNguoiDung());
+        String message = result > 0 ? "Thêm thành viên thành công" : "Thêm thành viên thất bại hoặc đã tồn tại";
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

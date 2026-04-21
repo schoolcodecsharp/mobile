@@ -22,11 +22,23 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thong_tin_ca_nhan);
+        
         dbHelper = new DatabaseHelper(this);
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         maNguoiDung = prefs.getInt("MaNguoiDung", -1);
         String tenNguoiDung = prefs.getString("TenNguoiDung", "");
         email = prefs.getString("Email", "");
+        
+        initViews();
+        tvEmail.setText(email);
+        edtTenMoi.setText(tenNguoiDung);
+        
+        btnCapNhatTen.setOnClickListener(v -> capNhatTen());
+        btnDoiMatKhau.setOnClickListener(v -> doiMatKhau());
+        btnQuayLai.setOnClickListener(v -> finish());
+    }
+    
+    private void initViews() {
         tvEmail = findViewById(R.id.tvEmail);
         edtTenMoi = findViewById(R.id.edtTenMoi);
         edtMatKhauCu = findViewById(R.id.edtMatKhauCu);
@@ -35,26 +47,6 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
         btnCapNhatTen = findViewById(R.id.btnCapNhatTen);
         btnDoiMatKhau = findViewById(R.id.btnDoiMatKhau);
         btnQuayLai = findViewById(R.id.btnQuayLai);
-        tvEmail.setText(email);
-        edtTenMoi.setText(tenNguoiDung);
-        btnCapNhatTen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                capNhatTen();
-            }
-        });
-        btnDoiMatKhau.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doiMatKhau();
-            }
-        });
-        btnQuayLai.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
     }
 
     private void capNhatTen() {
@@ -63,12 +55,11 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
             Toast.makeText(this, "Vui lòng nhập tên mới", Toast.LENGTH_SHORT).show();
             return;
         }
+        
         int result = dbHelper.capNhatTenNguoiDung(maNguoiDung, tenMoi);
         if (result > 0) {
-            SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString("TenNguoiDung", tenMoi);
-            editor.apply();
+            getSharedPreferences("UserPrefs", MODE_PRIVATE).edit()
+                .putString("TenNguoiDung", tenMoi).apply();
             Toast.makeText(this, "Cập nhật tên thành công", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Cập nhật tên thất bại", Toast.LENGTH_SHORT).show();
@@ -79,6 +70,7 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
         String matKhauCu = edtMatKhauCu.getText().toString().trim();
         String matKhauMoi = edtMatKhauMoi.getText().toString().trim();
         String xacNhanMatKhauMoi = edtXacNhanMatKhauMoi.getText().toString().trim();
+        
         if (matKhauCu.isEmpty() || matKhauMoi.isEmpty() || xacNhanMatKhauMoi.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
             return;
@@ -91,14 +83,15 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
             Toast.makeText(this, "Mật khẩu cũ không đúng", Toast.LENGTH_SHORT).show();
             return;
         }
+        
         int result = dbHelper.capNhatMatKhau(maNguoiDung, matKhauMoi);
+        String message = result > 0 ? "Đổi mật khẩu thành công" : "Đổi mật khẩu thất bại";
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        
         if (result > 0) {
-            Toast.makeText(this, "Đổi mật khẩu thành công", Toast.LENGTH_SHORT).show();
             edtMatKhauCu.setText("");
             edtMatKhauMoi.setText("");
             edtXacNhanMatKhauMoi.setText("");
-        } else {
-            Toast.makeText(this, "Đổi mật khẩu thất bại", Toast.LENGTH_SHORT).show();
         }
     }
 }
