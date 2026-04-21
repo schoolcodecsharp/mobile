@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="#2196F3"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="← "
+                android:textSize="24sp"
+                android:textColor="#FFFFFF"
+                android:padding="8dp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Quản lý thành viên"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:background="#FFFFFF"
+            android:elevation="2dp">
+
+            <TextView
+                android:id="@+id/tvDuAn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="📁 Dự án"
+                android:textSize="14sp"
+                android:textColor="#2196F3"
+                android:gravity="center"
+                android:padding="8dp"/>
+
+            <TextView
+                android:id="@+id/tvCongViec"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="📋 Công việc"
+                android:textSize="14sp"
+                android:textColor="#2196F3"
+                android:gravity="center"
+                android:padding="8dp"/>
+
+            <TextView
+                android:id="@+id/tvThongKe"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="📊 Thống kê"
+                android:textSize="14sp"
+                android:textColor="#2196F3"
+                android:gravity="center"
+                android:padding="8dp"/>
+
+            <TextView
+                android:id="@+id/tvLich"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="📅 Lịch"
+                android:textSize="14sp"
+                android:textColor="#2196F3"
+                android:gravity="center"
+                android:padding="8dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DANH SÁCH THÀNH VIÊN"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:padding="16dp"
+            android:gravity="center"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewThanhVien"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"/>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

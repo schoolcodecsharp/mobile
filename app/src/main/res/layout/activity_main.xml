@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="#2196F3"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvTenNguoiDung"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Xin chào"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tvQuayLaiAdmin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Quản trị"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"
+                android:padding="8dp"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/tvDangXuat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đăng xuất"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"
+                android:padding="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:background="#FFFFFF"
+            android:elevation="2dp">
+
+            <TextView
+                android:id="@+id/tvDuAn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="📁 Dự án"
+                android:textSize="14sp"
+                android:textColor="#2196F3"
+                android:gravity="center"
+                android:padding="8dp"/>
+
+            <TextView
+                android:id="@+id/tvThongKe"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="📊 Thống kê"
+                android:textSize="14sp"
+                android:textColor="#2196F3"
+                android:gravity="center"
+                android:padding="8dp"/>
+
+            <TextView
+                android:id="@+id/tvLich"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="📅 Lịch"
+                android:textSize="14sp"
+                android:textColor="#2196F3"
+                android:gravity="center"
+                android:padding="8dp"/>
+
+            <TextView
+                android:id="@+id/tvThongTinCaNhan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="👤 Cá nhân"
+                android:textSize="14sp"
+                android:textColor="#2196F3"
+                android:gravity="center"
+                android:padding="8dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DANH SÁCH CÔNG VIỆC"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:padding="16dp"
+            android:gravity="center"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:background="#FFFFFF">
+
+            <SearchView
+                android:id="@+id/searchView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:queryHint="Tìm kiếm công việc..."
+                android:iconifiedByDefault="false"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:background="#FFFFFF">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lọc: "
+                android:textSize="14sp"
+                android:layout_gravity="center_vertical"
+                android:paddingEnd="8dp"/>
+
+            <Spinner
+                android:id="@+id/spinnerLocTrangThai"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="8dp"/>
+
+            <Spinner
+                android:id="@+id/spinnerLocDanhMuc"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="8dp"/>
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"/>
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabThem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@android:drawable/ic_input_add"
+        app:backgroundTint="#2196F3"
+        app:tint="#FFFFFF"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

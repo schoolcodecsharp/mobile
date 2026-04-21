@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Quản Lý Công Việc</string>
+    <string-array name="trang_thai_array">
+        <item>Chưa hoàn thành</item>
+        <item>Đang thực hiện</item>
+        <item>Hoàn thành</item>
+    </string-array>
+    <string-array name="muc_do_uu_tien_array">
+        <item>Thấp</item>
+        <item>Trung bình</item>
+        <item>Cao</item>
+    </string-array>
+</resources>
